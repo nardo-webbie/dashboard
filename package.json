@@ -9,8 +9,8 @@
     "delta-fetch": "node scripts/delta-fetch.js"
   },
   "dependencies": {
-    "fast-xml-parser": "^4.5.0",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "fast-xml-parser": "^5.9.3"
   },
   "engines": {
     "node": ">=20"
