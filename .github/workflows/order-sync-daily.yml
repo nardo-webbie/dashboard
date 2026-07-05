@@ -1,0 +1,32 @@
+name: Order sync — dagelijkse delta
+
+on:
+  schedule:
+    # 05:00 UTC = 06:00/07:00 NL-tijd afhankelijk van zomer/wintertijd
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+
+jobs:
+  delta-fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run delta-fetch
+        run: npm run delta-fetch
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          GH_GIST_ID: ${{ secrets.GH_GIST_ID }}
+          RIEGE_SCOPE_BASE_URL: ${{ secrets.RIEGE_SCOPE_BASE_URL }}
+          RIEGE_SCOPE_USER: ${{ secrets.RIEGE_SCOPE_USER }}
+          RIEGE_SCOPE_PASS: ${{ secrets.RIEGE_SCOPE_PASS }}

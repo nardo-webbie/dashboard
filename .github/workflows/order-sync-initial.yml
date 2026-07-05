@@ -1,0 +1,31 @@
+name: Order sync — eenmalige bulk-fetch
+
+# Start deze workflow één keer handmatig via de Actions-tab ("Run workflow"),
+# nadat GH_GIST_ID al naar een lege gist wijst.
+on:
+  workflow_dispatch:
+
+jobs:
+  bulk-fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run bulk-fetch
+        run: npm run bulk-fetch
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          GH_GIST_ID: ${{ secrets.GH_GIST_ID }}
+          RIEGE_SCOPE_BASE_URL: ${{ secrets.RIEGE_SCOPE_BASE_URL }}
+          RIEGE_SCOPE_USER: ${{ secrets.RIEGE_SCOPE_USER }}
+          RIEGE_SCOPE_PASS: ${{ secrets.RIEGE_SCOPE_PASS }}
