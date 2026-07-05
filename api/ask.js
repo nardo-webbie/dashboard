@@ -67,7 +67,9 @@ module.exports = async (req, res) => {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-5',
-        max_tokens: 1024,
+        max_tokens: 2048,
+        thinking: { type: 'adaptive' },
+        output_config: { effort: 'low' }, // feitelijke data-lookup, geen diep redeneerwerk nodig
         system: systemPrompt,
         messages: [
           {
@@ -90,8 +92,19 @@ module.exports = async (req, res) => {
       .join('\n')
       .trim();
 
+    if (!answer) {
+      console.error('Geen tekstblok in Claude-response:', JSON.stringify({
+        stop_reason: data.stop_reason,
+        content_types: (data.content || []).map((b) => b.type),
+        usage: data.usage,
+      }));
+    }
+
     res.setHeader('Cache-Control', 'no-store');
-    res.status(200).json({ answer: answer || '(geen antwoord ontvangen)', ordersAnalyzed: records.length });
+    res.status(200).json({
+      answer: answer || `(geen antwoord ontvangen — stop_reason: ${data.stop_reason || 'onbekend'})`,
+      ordersAnalyzed: records.length,
+    });
   } catch (err) {
     res.status(502).json({ error: 'Kon geen antwoord genereren: ' + err.message });
   }
